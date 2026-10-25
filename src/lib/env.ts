@@ -4,16 +4,15 @@ import { z } from "zod";
 const envSchema = z.object({
   // Vite requires client-side variables to be prefixed with VITE_
   VITE_MAPTILER_KEY: z.string().nonempty(),
+
+  VITE_API_URL: z.url(),
 });
 
 // Run validation safely
 const _env = envSchema.safeParse(import.meta.env);
 
 if (!_env.success) {
-  console.error(
-    "❌ Invalid environment variables:",
-    z.treeifyError(_env.error),
-  );
+  console.error("❌ Invalid environment variables:", z.formatError(_env.error));
   throw new Error("Invalid environment variables");
 }
 

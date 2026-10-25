@@ -72,7 +72,7 @@ export default function MapView() {
       <Source
         id="tracks"
         type="vector"
-        tiles={["http://localhost:8080/dummy/gis/{z}/{x}/{y}?day_interval=2"]}
+        tiles={[`${env.VITE_API_URL}/dummy/gis/{z}/{x}/{y}?day_interval=2`]}
         maxzoom={18}
       >
         <Layer
