@@ -80,7 +80,7 @@ export default function MapView() {
           type="line"
           source-layer="tracks"
           layout={{ "line-cap": "round", "line-join": "round" }}
-          paint={{ "line-color": userColor, "line-width": defaultLineWidth }}
+          paint={{ "line-color": userColor, "line-width": lineWidth }}
         />
       </Source>
     </MapCom>
