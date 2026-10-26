@@ -3,12 +3,12 @@ import * as maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
-import type { ExpressionSpecification } from "maplibre-gl";
+import { setWorkerUrl, type ExpressionSpecification } from "maplibre-gl";
 import { env } from "#/lib/env";
 import { useState } from "react";
 
 if (typeof window !== "undefined") {
-  maplibregl.setWorkerUrl(workerUrl);
+  setWorkerUrl(workerUrl);
 }
 
 const PALETTE = [
@@ -66,8 +66,9 @@ export default function MapView() {
         if (props)
           console.debug("user", props.wf_user_id, "points", props.points);
       }}
-      style={{ width: 600, height: 400 }}
-      mapStyle={`https://api.maptiler.com/maps/openstreetmap/style.json?key=${env.VITE_MAPTILER_KEY}`}
+      style={{ width: 1600, height: 600 }}
+      // mapStyle={`https://api.maptiler.com/maps/openstreetmap/style.json?key=${env.VITE_MAPTILER_KEY}`}
+      mapStyle={`https://tiles.openfreemap.org/styles/bright`}
     >
       <Source
         id="tracks"
