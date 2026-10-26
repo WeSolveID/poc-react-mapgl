@@ -73,7 +73,7 @@ export default function MapView() {
       <Source
         id="tracks"
         type="vector"
-        tiles={[`${env.VITE_API_URL}/dummy/gis/{z}/{x}/{y}?day_interval=2`]}
+        tiles={[`${env.VITE_API_URL}/dummy/gis/user-line-history/{z}/{x}/{y}?day_interval=2`]}
         maxzoom={18}
       >
         <Layer
