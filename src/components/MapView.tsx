@@ -26,7 +26,7 @@ const PALETTE = [
 
 const userColor = [
   "match",
-  ["%", ["to-number", ["get", "wf_user_id"]], PALETTE.length],
+  ["%", ["to-number", ["get", "userID"]], PALETTE.length],
   ...PALETTE.flatMap((color, i) => [i, color]),
   "#888888", // fallback
 ] as ExpressionSpecification;
@@ -40,11 +40,11 @@ export default function MapView() {
     <MapCom
       mapLib={maplibregl}
       initialViewState={{
-        longitude: 107.0249600917387,
-        latitude: -6.301945394393446,
-        zoom: 17,
+        longitude: 106.85770682763189,
+        latitude: -6.358889537379909,
+        zoom: 13,
       }}
-      interactiveLayerIds={["tracks-line"]}
+      interactiveLayerIds={["kuda-lumping", "kuda-lumping-last-loc"]}
       onZoom={(e) => {
         const zoomLevel = e.target.getZoom();
         if (zoomLevel > 17) {
@@ -54,34 +54,58 @@ export default function MapView() {
         setLineWidth(3);
       }}
       onClick={(e) => {
-        //
+        const asd = e.target.querySourceFeatures("kambing-jantan", {
+          sourceLayer: "tracks",
+        });
+
+        const jkl = e.target.querySourceFeatures("kambing-jantan-point", {
+          sourceLayer: "last-locations",
+        });
+
         console.debug("kambing", {
-          query: e.target.querySourceFeatures("tracks", {
-            sourceLayer: "tracks",
-          }),
-          features: e.features,
+          asd,
+          jkl,
+          jaksldjalk: e.features,
         });
 
         const props = e.features?.[0]?.properties;
         if (props)
-          console.debug("user", props.wf_user_id, "points", props.points);
+          console.debug("kambing user", props.userID, "name", props.userName);
       }}
       style={{ width: 1600, height: 600 }}
       // mapStyle={`https://api.maptiler.com/maps/openstreetmap/style.json?key=${env.VITE_MAPTILER_KEY}`}
       mapStyle={`https://tiles.openfreemap.org/styles/bright`}
     >
       <Source
-        id="tracks"
+        id="kambing-jantan"
         type="vector"
-        tiles={[`${env.VITE_API_URL}/dummy/gis/user-line-history/{z}/{x}/{y}?day_interval=2`]}
+        tiles={[
+          `${env.VITE_API_URL}/dummy/gis/user-line-history/{z}/{x}/{y}?day_interval=2`,
+        ]}
         maxzoom={18}
       >
         <Layer
-          id="tracks-line"
+          id="kuda-lumping"
           type="line"
           source-layer="tracks"
           layout={{ "line-cap": "round", "line-join": "round" }}
-          paint={{ "line-color": userColor, "line-width": lineWidth }}
+          paint={{ "line-color": userColor, "line-width": 12 }}
+        />
+      </Source>
+
+      <Source
+        id="kambing-jantan-point"
+        type="vector"
+        tiles={[
+          `${env.VITE_API_URL}/dummy/gis/user-last-location/{z}/{x}/{y}?day_interval=2`,
+        ]}
+        maxzoom={18}
+      >
+        <Layer
+          id="kuda-lumping-last-loc"
+          type="circle"
+          source-layer="last-locations"
+          paint={{ "circle-radius": 15, "circle-color": userColor }}
         />
       </Source>
     </MapCom>
