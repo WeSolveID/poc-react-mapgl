@@ -6,6 +6,7 @@ import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import { setWorkerUrl, type ExpressionSpecification } from "maplibre-gl";
 import { env } from "#/lib/env";
 import { useState } from "react";
+import { formatISO } from "date-fns";
 
 if (typeof window !== "undefined") {
   setWorkerUrl(workerUrl);
@@ -33,8 +34,18 @@ const userColor = [
 
 const defaultLineWidth = 3;
 
-export default function MapView() {
+type Props = {
+  startRecordedAt: Date;
+  endRecordedAt: Date;
+};
+
+export default function MapView({ startRecordedAt, endRecordedAt }: Props) {
   const [lineWidth, setLineWidth] = useState(defaultLineWidth);
+
+  const sp = new URLSearchParams({
+    start_recorded_at: formatISO(startRecordedAt),
+    end_recorded_at: formatISO(endRecordedAt),
+  });
 
   return (
     <MapCom
@@ -55,17 +66,25 @@ export default function MapView() {
       }}
       onClick={(e) => {
         const asd = e.target.querySourceFeatures("kambing-jantan", {
-          sourceLayer: "tracks",
+          sourceLayer: "user-line-history",
         });
 
         const jkl = e.target.querySourceFeatures("kambing-jantan-point", {
-          sourceLayer: "last-locations",
+          sourceLayer: "user-last-location",
         });
 
         console.debug("kambing", {
           asd,
           jkl,
           jaksldjalk: e.features,
+        });
+
+        console.debug("kambing date", {
+          startRecordedAt,
+          endRecordedAt,
+          startRecordedAtISO: formatISO(startRecordedAt),
+          endRecordedAtISO: formatISO(endRecordedAt),
+          qs: sp.toString(),
         });
 
         const props = e.features?.[0]?.properties;
@@ -80,16 +99,16 @@ export default function MapView() {
         id="kambing-jantan"
         type="vector"
         tiles={[
-          `${env.VITE_API_URL}/dummy/gis/user-line-history/{z}/{x}/{y}?day_interval=2`,
+          `${env.VITE_API_URL}/gis/user-line-history/{z}/{x}/{y}.pbf?${sp.toString()}`,
         ]}
         maxzoom={18}
       >
         <Layer
           id="kuda-lumping"
           type="line"
-          source-layer="tracks"
+          source-layer="user-line-history"
           layout={{ "line-cap": "round", "line-join": "round" }}
-          paint={{ "line-color": userColor, "line-width": 12 }}
+          paint={{ "line-color": userColor, "line-width": 5 }}
         />
       </Source>
 
@@ -97,15 +116,15 @@ export default function MapView() {
         id="kambing-jantan-point"
         type="vector"
         tiles={[
-          `${env.VITE_API_URL}/dummy/gis/user-last-location/{z}/{x}/{y}?day_interval=2`,
+          `${env.VITE_API_URL}/gis/user-last-location/{z}/{x}/{y}.pbf?${sp.toString()}`,
         ]}
         maxzoom={18}
       >
         <Layer
           id="kuda-lumping-last-loc"
           type="circle"
-          source-layer="last-locations"
-          paint={{ "circle-radius": 15, "circle-color": userColor }}
+          source-layer="user-last-location"
+          paint={{ "circle-radius": 10, "circle-color": userColor }}
         />
       </Source>
     </MapCom>
